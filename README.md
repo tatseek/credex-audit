@@ -1,36 +1,43 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# SpendSmart AI — Free AI Spend Auditor
 
-## Getting Started
+SpendSmart AI helps startup founders and engineering managers find out if they are overpaying for AI tools like Cursor, Claude, ChatGPT, and GitHub Copilot. Enter your current subscriptions and get an instant audit showing exactly where you can save money — no login required.
 
-First, run the development server:
+**Live URL:** _coming soon_
+
+---
+
+## Screenshots
+
+_To be added_
+
+---
+
+## Quick Start
 
 ```bash
+git clone https://github.com/tatseek/credex-audit.git
+cd credex-audit
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open http://localhost:3000
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+---
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Decisions
 
-## Learn More
+**1. Next.js over React + Vite**
+Next.js handles frontend and backend API routes in one project, reducing complexity for a short build window.
 
-To learn more about Next.js, take a look at the following resources:
+**2. Zustand over useState for form state**
+The form has multiple tools with nested state. Zustand with persist middleware gives localStorage persistence across reloads for free.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+**3. Hardcoded audit rules over AI for savings logic**
+Rules are transparent, auditable, and defensible to a finance person. The assignment explicitly recommends this approach.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+**4. Tailwind CSS for styling**
+Full design control without overhead of a component library. The results page needs to look good enough to screenshot and share.
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+**5. TypeScript over JavaScript**
+Catches type errors early, especially important for the audit engine where wrong types could produce incorrect savings calculations.
