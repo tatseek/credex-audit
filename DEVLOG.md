@@ -22,3 +22,16 @@
 **Blockers / what I'm stuck on:** Special character encoding issue with vim causing JSX parse errors . resolved by rewriting files using cat. Minor terminal warnings remain but page renders correctly.
 
 **Plan for tomorrow:** Add AI-generated summary using Gemini API, set up Supabase for lead capture, add email confirmation via Resend, and build the shareable URL feature.
+
+
+## Day 3 — 2026-05-09
+
+**Hours worked:** 3~3.5 
+
+**What I did:** Set up Supabase database with leads table and RLS policies. Created Gemini API route for AI-generated audit summaries with fallback template. Built lead capture form on results page. Integrated Resend for transactional emails with HTML template. Verified end-to-end flow — leads saving to Supabase and emails delivering successfully.
+
+**What I learned:** Supabase now has publishable/secret keys instead of the old anon/service_role format. Resend's free tier uses onboarding@resend.dev as sender which works fine for development.
+
+**Blockers / what I'm stuck on:** None today — everything worked smoothly.
+
+**Plan for tomorrow:** Build shareable audit URLs with unique IDs, add Open Graph meta tags for link previews, and start on the CI/CD GitHub Actions workflow.
