@@ -5,12 +5,19 @@ import { useRouter } from 'next/navigation';
 import { useAuditStore } from '@/store/auditStore';
 import { runAudit } from '@/lib/auditEngine';
 import { AuditResult } from '@/types';
-import { Zap, TrendingDown, CheckCircle, ArrowLeft, AlertTriangle } from 'lucide-react';
+import { Zap, TrendingDown, CheckCircle, ArrowLeft, AlertTriangle, Mail } from 'lucide-react';
 
 export default function AuditPage() {
   const router = useRouter();
   const { formData } = useAuditStore();
   const [result, setResult] = useState<AuditResult | null>(null);
+  const [summary, setSummary] = useState('');
+  const [summaryLoading, setSummaryLoading] = useState(true);
+  const [email, setEmail] = useState('');
+  const [companyName, setCompanyName] = useState('');
+  const [role, setRole] = useState('');
+  const [submitted, setSubmitted] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
     if (formData.tools.length === 0) {
@@ -19,7 +26,49 @@ export default function AuditPage() {
     }
     const auditResult = runAudit(formData);
     setResult(auditResult);
+
+    fetch('/api/summary', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        formData,
+        totalMonthlySavings: auditResult.totalMonthlySavings,
+        totalAnnualSavings: auditResult.totalAnnualSavings,
+      }),
+    })
+      .then((r) => r.json())
+      .then((d) => setSummary(d.summary))
+      .catch(() => setSummary(''))
+      .finally(() => setSummaryLoading(false));
   }, []);
+
+  const handleLeadSubmit = async () => {
+    if (!email || !email.includes('@')) {
+      alert('Please enter a valid email.');
+      return;
+    }
+    setSubmitting(true);
+    try {
+      await fetch('/api/leads', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email,
+          companyName,
+          role,
+          teamSize: formData.teamSize,
+          auditData: formData,
+          totalMonthlySavings: result?.totalMonthlySavings,
+          totalAnnualSavings: result?.totalAnnualSavings,
+        }),
+      });
+      setSubmitted(true);
+    } catch {
+      alert('Something went wrong. Please try again.');
+    } finally {
+      setSubmitting(false);
+    }
+  };
 
   if (!result) return (
     <div className="min-h-screen bg-gray-950 flex items-center justify-center">
@@ -52,7 +101,7 @@ export default function AuditPage() {
           {isAlreadyOptimal ? (
             <>
               <h1 className="text-4xl font-bold text-green-400 mb-2">You are spending well</h1>
-              <p className="text-gray-400">Your current AI stack looks optimized.</p>
+              <p className="text-gray-400">Your current AI stack looks optimized for your use case.</p>
             </>
           ) : (
             <>
@@ -63,6 +112,15 @@ export default function AuditPage() {
                 That is <span className="text-green-300 font-semibold">${result.totalAnnualSavings.toFixed(0)} per year</span>
               </p>
             </>
+          )}
+        </div>
+
+        <div className="bg-gray-900 border border-gray-700 rounded-2xl p-6 mb-8">
+          <p className="text-xs text-gray-500 uppercase tracking-widest mb-2">AI Analysis</p>
+          {summaryLoading ? (
+            <p className="text-gray-400 animate-pulse">Generating your personalized summary...</p>
+          ) : (
+            <p className="text-gray-300 leading-relaxed">{summary}</p>
           )}
         </div>
 
@@ -114,13 +172,53 @@ export default function AuditPage() {
           ))}
         </div>
 
-        {isAlreadyOptimal && (
-          <div className="bg-gray-900 border border-gray-700 rounded-2xl p-6 mb-8 text-center">
-            <TrendingDown className="mx-auto text-green-400 mb-3" size={32} />
-            <h3 className="font-semibold mb-1">Stay in the loop</h3>
-            <p className="text-gray-400 text-sm">Your stack looks good right now.</p>
+        <div className="bg-gray-900 border border-gray-700 rounded-2xl p-6 mb-8">
+          <div className="flex items-center gap-2 mb-4">
+            <Mail className="text-green-400" size={20} />
+            <h2 className="text-lg font-semibold">
+              {isAlreadyOptimal ? 'Get notified when new optimizations apply' : 'Get your full report by email'}
+            </h2>
           </div>
-        )}
+          {submitted ? (
+            <div className="text-center py-4">
+              <p className="text-green-400 font-semibold text-lg">You are all set!</p>
+              <p className="text-gray-400 text-sm mt-1">Check your inbox for the audit report.</p>
+            </div>
+          ) : (
+            <div className="flex flex-col gap-3">
+              <input
+                type="email"
+                placeholder="your@email.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="bg-gray-800 border border-gray-600 text-white rounded-lg px-4 py-2.5 focus:outline-none focus:border-green-500"
+              />
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <input
+                  type="text"
+                  placeholder="Company name (optional)"
+                  value={companyName}
+                  onChange={(e) => setCompanyName(e.target.value)}
+                  className="bg-gray-800 border border-gray-600 text-white rounded-lg px-4 py-2.5 focus:outline-none focus:border-green-500"
+                />
+                <input
+                  type="text"
+                  placeholder="Your role (optional)"
+                  value={role}
+                  onChange={(e) => setRole(e.target.value)}
+                  className="bg-gray-800 border border-gray-600 text-white rounded-lg px-4 py-2.5 focus:outline-none focus:border-green-500"
+                />
+              </div>
+              <button
+                onClick={handleLeadSubmit}
+                disabled={submitting}
+                className="w-full py-3 bg-green-500 hover:bg-green-400 disabled:bg-gray-700 disabled:text-gray-500 text-black font-bold rounded-xl transition-colors">
+                {submitting ? 'Saving...' : 'Send me the report'}
+              </button>
+              <p className="text-xs text-gray-500 text-center">No spam. Credex may reach out for high-savings cases.</p>
+            </div>
+          )}
+        </div>
 
         <div className="text-center">
           <button onClick={() => router.push('/')}
