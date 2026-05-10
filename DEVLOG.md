@@ -35,3 +35,17 @@
 **Blockers / what I'm stuck on:** None today — everything worked smoothly.
 
 **Plan for tomorrow:** Build shareable audit URLs with unique IDs, add Open Graph meta tags for link previews, and start on the CI/CD GitHub Actions workflow.
+
+
+## Day 4 — 2026-05-10
+
+**Hours worked:** 3
+
+**What I did:** Created audits table in Supabase. Built API routes for saving and fetching audits. Created shareable public URL at /share/[id] with Open Graph and Twitter card meta tags. Fixed Next.js 15 params awaiting issue. Verified end-to-end flow — audit saves, share link works, shared page renders correctly without personal details.
+
+**What I learned:** Next.js 15 requires params to be awaited as a Promise in dynamic routes — different from Next.js 14. cat heredoc is much more reliable than vim for pasting large files.
+
+**Blockers / what I'm stuck on:** None — share links working perfectly.
+
+**Plan for tomorrow:** Write tests for the audit engine, set up GitHub Actions CI, and start deploying to Vercel.
+
