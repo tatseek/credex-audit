@@ -5,7 +5,11 @@ import { useRouter } from 'next/navigation';
 import { useAuditStore } from '@/store/auditStore';
 import { runAudit } from '@/lib/auditEngine';
 import { AuditResult } from '@/types';
-import { Zap, TrendingDown, CheckCircle, ArrowLeft, AlertTriangle, Mail } from 'lucide-react';
+import { Zap, TrendingDown, CheckCircle, ArrowLeft, AlertTriangle, Mail, Share2 } from 'lucide-react';
+
+function generateId(): string {
+  return Math.random().toString(36).substring(2, 15);
+}
 
 export default function AuditPage() {
   const router = useRouter();
@@ -18,6 +22,9 @@ export default function AuditPage() {
   const [role, setRole] = useState('');
   const [submitted, setSubmitted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [shareUrl, setShareUrl] = useState('');
+  const [copied, setCopied] = useState(false);
+  const [auditId] = useState(() => generateId());
 
   useEffect(() => {
     if (formData.tools.length === 0) {
@@ -37,7 +44,24 @@ export default function AuditPage() {
       }),
     })
       .then((r) => r.json())
-      .then((d) => setSummary(d.summary))
+      .then((d) => {
+        setSummary(d.summary);
+        return fetch('/api/audits', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            id: auditId,
+            formData,
+            recommendations: auditResult.recommendations,
+            totalMonthlySavings: auditResult.totalMonthlySavings,
+            totalAnnualSavings: auditResult.totalAnnualSavings,
+            aiSummary: d.summary,
+          }),
+        });
+      })
+      .then(() => {
+        setShareUrl(`${window.location.origin}/share/${auditId}`);
+      })
       .catch(() => setSummary(''))
       .finally(() => setSummaryLoading(false));
   }, []);
@@ -68,6 +92,12 @@ export default function AuditPage() {
     } finally {
       setSubmitting(false);
     }
+  };
+
+  const handleCopy = () => {
+    navigator.clipboard.writeText(shareUrl);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
   };
 
   if (!result) return (
@@ -123,6 +153,28 @@ export default function AuditPage() {
             <p className="text-gray-300 leading-relaxed">{summary}</p>
           )}
         </div>
+
+        {shareUrl && (
+          <div className="bg-gray-900 border border-gray-700 rounded-2xl p-6 mb-8">
+            <div className="flex items-center gap-2 mb-3">
+              <Share2 className="text-green-400" size={20} />
+              <h2 className="text-lg font-semibold">Share your audit</h2>
+            </div>
+            <p className="text-gray-400 text-sm mb-3">Share this link with your team — personal details are not included.</p>
+            <div className="flex gap-2">
+              <input
+                readOnly
+                value={shareUrl}
+                className="flex-1 bg-gray-800 border border-gray-600 text-gray-300 rounded-lg px-4 py-2.5 text-sm focus:outline-none"
+              />
+              <button
+                onClick={handleCopy}
+                className="px-4 py-2.5 bg-green-500 hover:bg-green-400 text-black font-bold rounded-lg transition-colors text-sm whitespace-nowrap">
+                {copied ? 'Copied!' : 'Copy link'}
+              </button>
+            </div>
+          </div>
+        )}
 
         {hasSignificantSavings && (
           <div className="bg-green-950 border border-green-700 rounded-2xl p-6 mb-8 flex flex-col md:flex-row items-center justify-between gap-4">
@@ -219,6 +271,14 @@ export default function AuditPage() {
             </div>
           )}
         </div>
+
+        {isAlreadyOptimal && (
+          <div className="bg-gray-900 border border-gray-700 rounded-2xl p-6 mb-8 text-center">
+            <TrendingDown className="mx-auto text-green-400 mb-3" size={32} />
+            <h3 className="font-semibold mb-1">Your stack looks great</h3>
+            <p className="text-gray-400 text-sm">We will notify you when better options appear for your tools.</p>
+          </div>
+        )}
 
         <div className="text-center">
           <button onClick={() => router.push('/')}
