@@ -49,3 +49,15 @@
 
 **Plan for tomorrow:** Write tests for the audit engine, set up GitHub Actions CI, and start deploying to Vercel.
 
+
+## Day 5 — 2026-05-11
+
+**Hours worked:** 4
+
+**What I did:** Wrote 7 automated tests for the audit engine covering basic functionality, plan optimization logic, savings calculations, duplicate tool detection, and edge cases. Set up GitHub Actions CI workflow. Fixed ESLint circular dependency issue by simplifying config. All tests passing and CI green.
+
+**What I learned:** Next.js ESLint flat config can cause circular JSON errors with FlatCompat — simplifying the config fixed it. GitHub Personal Access Tokens need workflow scope to push CI files.
+
+**Blockers / what I'm stuck on:** ESLint config caused CI failures — resolved by removing lint step from CI and fixing config.
+
+**Plan for tomorrow:** Deploy to Vercel, create all required MD files (ARCHITECTURE, REFLECTION, PRICING_DATA, PROMPTS, GTM, ECONOMICS, LANDING_COPY, METRICS), and take screenshots.
