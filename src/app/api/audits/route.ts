@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase';
+import { PRICING_SNAPSHOT } from '@/lib/pricingSnapshot';
 
 export async function POST(req: NextRequest) {
-  const { id, formData, recommendations, totalMonthlySavings, totalAnnualSavings, aiSummary } = await req.json();
+  const { id, formData, recommendations, totalMonthlySavings, totalAnnualSavings, aiSummary, userEmail } = await req.json();
 
   const { error } = await supabase.from('audits').insert({
     id,
@@ -13,6 +14,8 @@ export async function POST(req: NextRequest) {
     total_monthly_savings: totalMonthlySavings,
     total_annual_savings: totalAnnualSavings,
     ai_summary: aiSummary,
+    user_email: userEmail || null,
+    pricing_snapshot: PRICING_SNAPSHOT,
   });
 
   if (error) {
