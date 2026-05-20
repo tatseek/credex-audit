@@ -86,6 +86,13 @@ export default function AuditPage() {
           totalAnnualSavings: result?.totalAnnualSavings,
         }),
       });
+
+      await fetch(`/api/audits/${auditId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userEmail: email }),
+      });
+
       setSubmitted(true);
     } catch {
       alert('Something went wrong. Please try again.');
