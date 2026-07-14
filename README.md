@@ -2,7 +2,7 @@
 
 SpendSmart AI helps startup founders and engineering managers find out if they are overpaying for AI tools like Cursor, Claude, ChatGPT, and GitHub Copilot. Enter your current subscriptions and get an instant audit showing exactly where you can save money — no login required.
 
-**Live URL:** https://credex-audit-xxxx.vercel.app
+**Live URL:** [https://credex-audit-xxxx.vercel.app](https://credex-audit-inky-nine.vercel.app/)
 
 ---
 
