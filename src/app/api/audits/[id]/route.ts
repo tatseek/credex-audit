@@ -19,3 +19,22 @@ export async function GET(
 
   return NextResponse.json({ audit: data });
 }
+
+export async function PATCH(
+  req: NextRequest,
+  context: { params: Promise<{ id: string }> }
+) {
+  const { id } = await context.params;
+  const { userEmail } = await req.json();
+
+  const { error } = await supabase
+    .from('audits')
+    .update({ user_email: userEmail })
+    .eq('id', id);
+
+  if (error) {
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  }
+
+  return NextResponse.json({ success: true });
+}

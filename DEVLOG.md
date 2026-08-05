@@ -61,3 +61,17 @@
 **Blockers / what I'm stuck on:** ESLint config caused CI failures — resolved by removing lint step from CI and fixing config.
 
 **Plan for tomorrow:** Deploy to Vercel, create all required MD files (ARCHITECTURE, REFLECTION, PRICING_DATA, PROMPTS, GTM, ECONOMICS, LANDING_COPY, METRICS), and take screenshots.
+
+
+
+## Day 6 — 2026-05-12
+
+**Hours worked:** 4
+
+**What I did:** Fixed Vercel deployment TypeScript errors. Deployed successfully to Vercel. Updated page title and meta description. Created all required MD files: ARCHITECTURE, PRICING_DATA, PROMPTS, REFLECTION, GTM, ECONOMICS, LANDING_COPY, METRICS, USER_INTERVIEWS.
+
+**What I learned:** Next.js 15 requires params to be awaited as Promise in both page components and API routes. Vercel uses the same TypeScript version as local so local build errors must be fixed before pushing.
+
+**Blockers / what I'm stuck on:** Page title caching issue on browser — resolved by hard refresh on live URL.
+
+**Plan for tomorrow:** Final polish, take screenshots, update README with live URL and screenshots, verify git commit count across 5 days, final review of all files, and finalize the interviews. 
